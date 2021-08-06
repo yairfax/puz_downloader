@@ -6,6 +6,7 @@ import re
 import html
 
 num_re = re.compile(r'(\d{1,3})\. ')
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -18,6 +19,10 @@ def get_puzzle_json(date):
 
     data = json.loads(req.text)
     return data
+
+def get_filename(date):
+    month, day, year = date.split('/')
+    return months[int(month) - 1] + day + year[2:] + ".puz"
 
 def generate_puz(puz_json):
     p = puz.Puzzle()
@@ -37,8 +42,6 @@ def make_clue_list(across, down):
     across = [(html.unescape(num_re.sub('', clue)), int(num_re.findall(clue)[0])) for clue in across]
     down = [(html.unescape(num_re.sub('', clue)), int(num_re.findall(clue)[0])) for clue in down]
 
-    print(across)
-
     out = []
 
     i_a, i_d = (0, 0)
@@ -55,7 +58,7 @@ def make_clue_list(across, down):
 def main(args):
     puz_file = generate_puz(get_puzzle_json(args.date))
 
-    puz_file.save(args.date.replace('/', '_') + ".puz")
+    puz_file.save(get_filename(args.date))
 
 if __name__ == "__main__":
     main(get_args())
