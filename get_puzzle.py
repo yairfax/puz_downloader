@@ -34,13 +34,50 @@ def generate_puz(puz_json):
     p.height = int(puz_json['size']['rows'])
     p.fill = "".join(char if char == '.' else '-' for char in puz_json['grid'])
     p.solution = "".join(puz_json['grid'])
-    p.clues = make_clue_list(puz_json['clues']['across'], puz_json['clues']['down'])
+    p.clues = make_clue_list(puz_json)
 
     return p
 
-def make_clue_list(across, down):
-    across = [(html.unescape(num_re.sub('', clue)), int(num_re.findall(clue)[0])) for clue in across]
-    down = [(html.unescape(num_re.sub('', clue)), int(num_re.findall(clue)[0])) for clue in down]
+def get_numbering(b, cols):
+    across = []
+    down = []
+    counter = 1
+    inc = False
+    for i, l in enumerate(b):
+        if l == '.':
+            continue
+
+        if i % cols == 0 or b[i - 1] == '.':
+            across += [counter]
+            inc = True
+        
+        if i < cols or b[i - cols] == '.':
+            down += [counter]
+            inc = True
+        
+        if inc:
+            counter += 1
+            inc = False
+
+    return across, down
+
+def get_clue_map(p):
+    across = {num_re.findall(clue)[0]: html.unescape(num_re.sub('', clue)) for clue in p['clues']['across']}
+    down = {num_re.findall(clue)[0]: html.unescape(num_re.sub('', clue)) for clue in p['clues']['down']}
+
+    return across, down
+
+def prep_clues(p):
+    across, down = get_clue_map(p)
+    nums_across, nums_down = get_numbering(p['grid'], p['size']['cols'])
+
+    across = [(across[str(i)] if str(i) in across else "NO CLUE FOUND", i) for i in nums_across]
+    down = [(down[str(i)] if str(i) in down else "NO CLUE FOUND", i) for i in nums_down]
+
+    return across, down
+
+def make_clue_list(p):
+    across, down = prep_clues(p)
 
     out = []
 
