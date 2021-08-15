@@ -35,8 +35,13 @@ def generate_puz(puz_json):
     p.fill = "".join(char if char == '.' else '-' for char in puz_json['grid'])
     p.solution = "".join(puz_json['grid'])
     p.clues = make_clue_list(puz_json)
+    if puz_json['shadecircles']:
+        p.markup().markup = fill_circles(puz_json)
 
     return p
+
+def fill_circles(p):
+    return [c * puz.GridMarkup.Circled for c in p['circles']]
 
 def get_numbering(b, cols):
     across = []
