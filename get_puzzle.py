@@ -5,7 +5,7 @@ import argparse
 import re
 import html
 
-num_re = re.compile(r'(\d{1,3})\. ')
+num_re = re.compile(r'^(\d{1,3})\. ')
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 def get_args():
