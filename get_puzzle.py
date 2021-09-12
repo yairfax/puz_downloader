@@ -35,7 +35,7 @@ def generate_puz(puz_json):
     p.fill = "".join(char if char == '.' else '-' for char in puz_json['grid'])
     p.solution = "".join(puz_json['grid'])
     p.clues = make_clue_list(puz_json)
-    if puz_json['shadecircles']:
+    if puz_json['shadecircles'] or "circles" in puz_json:
         p.markup().markup = fill_circles(puz_json)
 
     return p
