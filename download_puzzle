@@ -3,4 +3,5 @@
 cd $( dirname "${BASH_SOURCE[0]}")
 echo "Enter a date in the form mm/dd/yyyy:"
 read date
-python3 get_puzzle.py --date $date
+FILE=$(python3 get_puzzle.py --date $date)
+open $FILE

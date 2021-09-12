@@ -100,7 +100,9 @@ def make_clue_list(p):
 def main(args):
     puz_file = generate_puz(get_puzzle_json(args.date))
 
-    puz_file.save(get_filename(args.date))
+    filename = get_filename(args.date) 
+    puz_file.save(filename)
+    print(filename)
 
 if __name__ == "__main__":
     main(get_args())

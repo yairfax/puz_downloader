@@ -180,3 +180,4 @@ About
 
 *.puz
 .vscode/
+.DS_Store
