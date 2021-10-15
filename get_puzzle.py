@@ -4,6 +4,7 @@ import json
 import argparse
 import re
 import html
+from datetime import date
 
 num_re = re.compile(r'^(\d{1,3})\. ')
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -12,6 +13,15 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", required=True, action="store")
     return parser.parse_args()
+
+def get_date(date_str):
+    date_str = date_str.lower()
+    match date_str:
+	case "today":
+            date_obj = date.today()
+	case x if re.match(r'[a-z]{3,}', date_str):
+	    
+
 
 def get_puzzle_json(date):
     req = requests.get("https://www.xwordinfo.com/JSON/Data.aspx", params={'date': date, "format": "text"},
@@ -98,6 +108,7 @@ def make_clue_list(p):
     return out
 
 def main(args):
+    date = get_date(args.date)
     puz_file = generate_puz(get_puzzle_json(args.date))
 
     filename = get_filename(args.date) 
