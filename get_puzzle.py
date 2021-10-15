@@ -4,10 +4,11 @@ import json
 import argparse
 import re
 import html
-from datetime import date
+from datetime import date, timedelta
 
 num_re = re.compile(r'^(\d{1,3})\. ')
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -16,12 +17,30 @@ def get_args():
 
 def get_date(date_str):
     date_str = date_str.lower()
-    match date_str:
-	case "today":
-            date_obj = date.today()
-	case x if re.match(r'[a-z]{3,}', date_str):
-	    
+    today = date.today()
+    match date_str.split('/'):
+        case [""] | ["today"]:
+            date_obj = today
+        case [x] if x[:3] in days or x.startswith('sha'):
+            x = x[:3]
+            if x == "sha":
+                x = "sat"
+            today = date.today()
+            today_ind = today.weekday()
+            date_ind = days.index(x)
+            delta = (today_ind - date_ind) % 7
+            date_obj = today - timedelta(delta)
+        case [month, day] if is_date_number(month, day):
+            date_obj = date(today.year, int(month), int(day))
+        case [month, day, year] if is_date_number(month, day, year):
+            date_obj = date(2000 + int(year), int(month), int(day))
+        case [month, day, year] if is_date_number(month, day) and re.fullmatch(r'\d{4}', year):
+            date_obj = date(int(year), int(month), int(day))
 
+    return date_obj.strftime("%m/%d/%Y")
+
+def is_date_number(*num_str):
+    return all(re.fullmatch(r'\d{1,2}', day_str) for day_str in num_str)
 
 def get_puzzle_json(date):
     req = requests.get("https://www.xwordinfo.com/JSON/Data.aspx", params={'date': date, "format": "text"},
@@ -109,7 +128,7 @@ def make_clue_list(p):
 
 def main(args):
     date = get_date(args.date)
-    puz_file = generate_puz(get_puzzle_json(args.date))
+    puz_file = generate_puz(get_puzzle_json(date))
 
     filename = get_filename(args.date) 
     puz_file.save(filename)
