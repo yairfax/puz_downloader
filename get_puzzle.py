@@ -12,10 +12,11 @@ days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--date", required=True, action="store")
+    parser.add_argument("--date", action="store")
     return parser.parse_args()
 
 def get_date(date_str):
+    date_str = date_str or ""
     date_str = date_str.lower()
     today = date.today()
     match date_str.split('/'):
@@ -130,7 +131,7 @@ def main(args):
     date = get_date(args.date)
     puz_file = generate_puz(get_puzzle_json(date))
 
-    filename = get_filename(args.date) 
+    filename = get_filename(date) 
     puz_file.save(filename)
     print(filename)
 
