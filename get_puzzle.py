@@ -26,7 +26,6 @@ def get_date(date_str):
             x = x[:3]
             if x == "sha":
                 x = "sat"
-            today = date.today()
             today_ind = today.weekday()
             date_ind = days.index(x)
             delta = (today_ind - date_ind) % 7
