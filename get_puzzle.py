@@ -5,6 +5,8 @@ import argparse
 import re
 import html
 from datetime import date, timedelta
+import unicodedata
+
 
 num_re = re.compile(r'^(\d{1,3})\. ')
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -95,9 +97,17 @@ def get_numbering(b, cols):
 
     return across, down
 
+def unescape(clue):
+    clue = num_re.sub('', clue)
+    clue = html.unescape(clue)
+
+    clue = "".join(c.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1', 'namereplace') for c in clue)
+
+    return clue
+
 def get_clue_map(p):
-    across = {num_re.findall(clue)[0]: html.unescape(num_re.sub('', clue)) for clue in p['clues']['across']}
-    down = {num_re.findall(clue)[0]: html.unescape(num_re.sub('', clue)) for clue in p['clues']['down']}
+    across = {num_re.findall(clue)[0]: unescape(clue) for clue in p['clues']['across']}
+    down = {num_re.findall(clue)[0]: unescape(clue) for clue in p['clues']['down']}
 
     return across, down
 
