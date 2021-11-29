@@ -5,7 +5,6 @@ import argparse
 import re
 import html
 from datetime import date, timedelta
-import unicodedata
 
 
 num_re = re.compile(r'^(\d{1,3})\. ')
