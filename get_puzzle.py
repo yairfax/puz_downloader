@@ -44,7 +44,7 @@ def is_date_number(*num_str):
     return all(re.fullmatch(r'\d{1,2}', day_str) for day_str in num_str)
 
 def get_puzzle_json(date):
-    req = requests.get("https://www.xwordinfo.com/JSON/Data.aspx", params={'date': date, "format": "text"},
+    req = requests.get("https://www.xwordinfo.com/JSON/Data.ashx", params={'date': date, "format": "text"},
         headers={'Referer': 'https://www.xwordinfo.com/JSON/'})
 
     data = json.loads(req.text)
