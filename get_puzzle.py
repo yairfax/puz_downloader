@@ -59,16 +59,28 @@ def generate_puz(puz_json):
     p.title = puz_json['title']
     p.author = f"{puz_json['author']} / {puz_json['editor']}"
     p.copyright = puz_json['copyright']
-    p.notes = puz_json['notepad']
     p.width = int(puz_json['size']['cols'])
     p.height = int(puz_json['size']['rows'])
-    p.fill = "".join(char if char == '.' else '-' for char in puz_json['grid'])
-    p.solution = "".join(puz_json['grid'])
+    p.fill = "".join(char if char == '.' else ('X' if len(char) > 1 else '-') for char in puz_json['grid'])
+    p.solution = "".join(char if len(char) == 1 else 'X' for char in puz_json['grid'])
+    p.notes = get_notes(puz_json)
     p.clues = make_clue_list(puz_json)
     if puz_json['shadecircles'] or ("circles" in puz_json and puz_json["circles"]):
         p.markup().markup = fill_circles(puz_json)
 
     return p
+
+def get_notes(p):
+    notes = p['notepad'] or ""
+
+    if 'jnotes' in p and p['jnotes']:
+        notes += "\n\nNotes from API author: " + p['jnotes']
+
+    replaced_words = [word for word in p['grid'] if len(word) > 1]
+    if len(replaced_words) > 1:
+        notes += "\n\nNote from the coder: The following words were replaced with Xs from the puzzle's source JSON, in order: " + ", ".join(replaced_words)
+
+    return notes
 
 def fill_circles(p):
     return [c * puz.GridMarkup.Circled for c in p['circles']]
@@ -82,11 +94,12 @@ def get_numbering(b, cols):
         if l == '.':
             continue
 
-        if i % cols == 0 or b[i - 1] == '.':
+        # TODO: fix case of final space with black on left, and transpose
+        if i % cols == 0 or (b[i - 1] == '.' and b[i + 1] != '.'):
             across += [counter]
             inc = True
         
-        if i < cols or b[i - cols] == '.':
+        if i < cols or (b[i - cols] == '.' and b[i + cols] != '.'):
             down += [counter]
             inc = True
         
