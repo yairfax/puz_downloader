@@ -112,6 +112,7 @@ def get_numbering(b, cols):
 def unescape(clue):
     clue = num_re.sub('', clue)
     clue = html.unescape(clue)
+    clue = clue.replace('\u2026', '...')
 
     clue = "".join(c.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1', 'namereplace') for c in clue)
 
