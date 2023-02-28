@@ -83,7 +83,7 @@ def get_notes(p):
     return notes
 
 def fill_circles(p):
-    return [c * puz.GridMarkup.Circled for c in p['circles']]
+    return [puz.GridMarkup.Circled if c else 0 for c in p['circles']]
 
 def get_numbering(b, cols):
     across = []
