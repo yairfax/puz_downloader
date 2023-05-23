@@ -57,18 +57,21 @@ def get_filename(date):
 def generate_puz(puz_json):
     p = puz.Puzzle()
     p.title = puz_json['title']
-    p.author = f"{puz_json['author']} / {puz_json['editor']}"
+    p.author = f"{sanitize_bad_chars(puz_json['author'])} / {puz_json['editor']}"
     p.copyright = puz_json['copyright']
     p.width = int(puz_json['size']['cols'])
     p.height = int(puz_json['size']['rows'])
     p.fill = "".join(char if char == '.' else ('X' if len(char) > 1 else '-') for char in puz_json['grid'])
     p.solution = "".join(char if len(char) == 1 else 'X' for char in puz_json['grid'])
-    p.notes = get_notes(puz_json)
+    p.notes = sanitize_bad_chars(get_notes(puz_json))
     p.clues = make_clue_list(puz_json)
     if puz_json['shadecircles'] or ("circles" in puz_json and puz_json["circles"]):
         p.markup().markup = fill_circles(puz_json)
 
     return p
+
+def sanitize_bad_chars(string):
+    return string.encode('latin-1', 'replace').decode('latin-1')
 
 def get_notes(p):
     notes = p['notepad'] or ""
