@@ -5,6 +5,7 @@ import argparse
 import re
 import html
 from datetime import date, timedelta
+from os.path import isfile
 
 
 num_re = re.compile(r'^(\d{1,3})\. ')
@@ -154,10 +155,11 @@ def make_clue_list(p):
 
 def main(args):
     date = get_date(args.date)
-    puz_file = generate_puz(get_puzzle_json(date))
+    filename = get_filename(date)
 
-    filename = get_filename(date) 
-    puz_file.save(filename)
+    if not isfile(filename):
+        puz_file = generate_puz(get_puzzle_json(date))
+        puz_file.save(filename)
     print(filename)
 
 if __name__ == "__main__":
