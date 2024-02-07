@@ -17,10 +17,11 @@ def get_args():
     parser.add_argument("--date", action="store")
     return parser.parse_args()
 
-def get_date(date_str):
+def get_date(date_str: str):
     date_str = date_str or ""
     date_str = date_str.lower()
     today = date.today()
+    date_obj = None
     match date_str.split('/'):
         case [""] | ["today"]:
             date_obj = today
@@ -39,7 +40,7 @@ def get_date(date_str):
         case [month, day, year] if is_date_number(month, day) and re.fullmatch(r'\d{4}', year):
             date_obj = date(int(year), int(month), int(day))
 
-    return date_obj.strftime("%m/%d/%Y")
+    return date_obj and date_obj.strftime("%m/%d/%Y")
 
 def is_date_number(*num_str):
     return all(re.fullmatch(r'\d{1,2}', day_str) for day_str in num_str)
